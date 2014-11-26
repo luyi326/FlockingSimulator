@@ -1,7 +1,7 @@
 # lab_7_examples.py
 #
-# Author:
-# Student ID:
+# Author: He Bai
+# Student ID: 997677931
 #
 # This library was written as part of Physics 102: Computational Laboratory
 # in Physics, Fall 2014.
