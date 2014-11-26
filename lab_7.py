@@ -21,11 +21,15 @@ from random import gauss
 
 
 # Exercise
-def normalize(v):
-    norm = np.linalg.norm(v)
-    if norm == 0:
-       return v
-    return v/norm
+def to_polar(x, y):
+    r = math.sqrt(x**2 + y**2)
+    theta = math.atan2(y, x)
+    return [r, theta]
+
+def to_rect(r, theta):
+    x = r * math.cos(theta)
+    y = r * math.sin(theta)
+    return [x, y]
 
 class my_flocking_sim:
     # This function is run when a class is instantiated. It sets up the class and
@@ -143,12 +147,12 @@ class my_flocking_sim:
                     alignment = self.aligmnent(time, i)
                     cohesion = self.cohesion(time, i)
                     separation = self.separation(time, i)
-                    self.velocities[time,i,0] = alignment[0] + cohesion[0] + separation[0]
-                    self.velocities[time,i,1] = alignment[1] + cohesion[1] + separation[1]
-                    if self.velocities[time,i,0] < 0.0001 and self.velocities[time,i,1] < 0.0001:
+                    r_theta_pair = to_polar(alignment[0] + cohesion[0] + separation[0], alignment[1] + cohesion[1] + separation[1])
+                    self.velocities[time,i,0] = r_theta_pair[0]
+                    self.velocities[time,i,1] = r_theta_pair[1]
+                    if self.velocities[time,i,0] < 0.0001:
                         print "calculated speed is not enough"
                         self.velocities[time,i,0] = self.velocities[time-1,i,0]
-                        self.velocities[time,i,1] = self.velocities[time-1,i,1]
 
     # This function updtates the position of the shark
     def step_shark_pos_to(self, time):
@@ -189,8 +193,9 @@ class my_flocking_sim:
                 dist = math.sqrt((self.positions[time,i,0] - self.positions[time,fishIndex,0])**2 + (self.positions[time,i,1] - self.positions[time,fishIndex,1])**2)
                 print "distance = {0}".format(dist)
                 if (dist < 1):
-                    x += self.velocities[time, i, 0]
-                    y += self.velocities[time, i, 1]
+                    x_y_pair = to_rect(self.velocities[time, i, 0], self.velocities[time, i, 1])
+                    x += x_y_pair[0]
+                    y += x_y_pair[1]
                     neibourCount += 1
         if (neibourCount != 0):
             x /= neibourCount
